@@ -26,13 +26,15 @@ public class OAuthAttributes {
     }
 
 //of(): OAuth2User에서 반환하는 사용자 정보는 Map이기 때문에 값 하나하나 변환해야 함
-    public static OAuthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
-        if("naver".equals(registrationId)) {
-            return ofNaver("id", attributes);
-        }
-
-        return ofGoogle(userNameAttributeName, attributes);
+public static OAuthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes){
+    if("naver".equals(registrationId)){
+        return ofNaver("id", attributes);
     }
+    if("kakao".equals(registrationId)){
+        return ofKakao("id", attributes);
+    }
+    return ofGoogle(userNameAttributeName, attributes);
+}
 
     private static OAuthAttributes ofGoogle(String userNameAttributeName, Map<String, Object> attributes) {
         return OAuthAttributes.builder()
@@ -54,15 +56,26 @@ public class OAuthAttributes {
                 .nameAttributeKey(userNameAttributeName)
                 .build();
     }
-//    private static OAuthAttributes ofKakao(String userNameAttributeName, Map<String, Object> attributes) {
+    private static OAuthAttributes ofKakao(String userNameAttributeName, Map<String, Object> attributes) {
+        Map<String,Object> KakaoResponse = (Map<String, Object>)attributes.get("kakao_account");
+        Map<String, Object> KakaoProfile = (Map<String, Object>) KakaoResponse.get("profile");
+        return OAuthAttributes.builder()
+                .name((String)KakaoProfile.get("nickname"))
+                .email((String)KakaoResponse.get("email"))
+                .picture((String)KakaoProfile.get("profile_image_url"))
+                .attributes(attributes)
+                .nameAttributeKey(userNameAttributeName)
+                .build();
+//        Map<String, Object> response = (Map<String, Object>) attributes.get("kakao_account");
+//
 //        return OAuthAttributes.builder()
-//                .name((String) attributes.get("name"))
-//                .email((String) attributes.get("email"))
-//                .picture((String) attributes.get("picture"))
-//                .attributes(attributes)
+//                .name((String) response.get("name"))
+//                .email((String) response.get("email"))
+//                .picture((String) response.get("profile_image"))
+//                .attributes(response)
 //                .nameAttributeKey(userNameAttributeName)
 //                .build();
-//    }
+    }
 
     public User toEntity() {            //User엔티티 생성
         return User.builder()
