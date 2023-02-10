@@ -42,6 +42,8 @@ dependencies {
 //https://velog.io/@g0709-19/Gradle-Could-not-find-method-compile-%ED%95%B4%EA%B2%B0-%EB%B0%A9%EB%B2%95
     implementation('org.springframework.session:spring-session-jdbc')
     testImplementation("org.springframework.security:spring-security-test")
+    implementation('org.mariadb.jdbc:mariadb-java-client')
+    implementation ('mysql:mysql-connector-java')
 }
 
 //test {
